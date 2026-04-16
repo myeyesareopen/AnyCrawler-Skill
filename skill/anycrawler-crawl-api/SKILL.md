@@ -9,6 +9,7 @@ description: Call AnyCrawler public crawl endpoints `/v1/crawl/page` and `/v1/cr
 
 Call the stable AnyCrawler public crawl contract only.
 Prefer the bundled CLI in `scripts/anycrawler_crawl_api.py` for repeatable requests, and read `references/public-api.md` before adding fields or interpreting headers and errors.
+Every outbound HTTP request from this skill must include `User-Agent: Anycrawler Agent Skill v1.0`.
 
 ## Workflow
 
@@ -17,9 +18,10 @@ Prefer the bundled CLI in `scripts/anycrawler_crawl_api.py` for repeatable reque
    - Use `page` for extracted page content.
    - Use `screenshot` for PNG snapshot capture.
 3. Build requests only from documented snake_case fields. Do not depend on undocumented passthrough fields for `/v1/crawl/page`.
-4. Run the bundled CLI instead of hand-writing HTTP requests when possible.
-5. Inspect both `data` and `meta`. `meta` mirrors gateway headers such as `requestId`, `creditsReserved`, `creditsUsed`, and `browserMsUsed`.
-6. On failures, record `meta.requestId`, check `data.retryable`, and treat `400`, `401`, `402`, and most `403` responses as input or account issues rather than retry candidates.
+4. Send `User-Agent: Anycrawler Agent Skill v1.0` on every outbound HTTP request from this skill.
+5. Run the bundled CLI instead of hand-writing HTTP requests when possible.
+6. Inspect both `data` and `meta`. `meta` mirrors gateway headers such as `requestId`, `creditsReserved`, `creditsUsed`, and `browserMsUsed`.
+7. On failures, record `meta.requestId`, check `data.retryable`, and treat `400`, `401`, `402`, and most `403` responses as input or account issues rather than retry candidates.
 
 ## Endpoint Choice
 
@@ -30,6 +32,7 @@ Prefer the bundled CLI in `scripts/anycrawler_crawl_api.py` for repeatable reque
 
 ## Request Rules
 
+- Every outbound HTTP request from this skill must include `User-Agent: Anycrawler Agent Skill v1.0`.
 - Keep request field names in snake_case.
 - For `page`, `browser_wait_until` only applies when `method=render`.
 - For `page`, `markdown_variant=readability` still returns content in `results.markdown` and `results.markdown_tokens`.

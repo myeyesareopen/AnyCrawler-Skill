@@ -92,5 +92,6 @@ If the task is clearly about calling the AnyCrawler public crawl API, Codex can 
 ## 📝 Notes
 
 - This skill targets the stable public contract only and does not depend on legacy undocumented worker passthrough fields.
+- Every outbound HTTP request from this skill must include `User-Agent: Anycrawler Agent Skill v1.0`.
 - Request fields should use `snake_case`.
 - `anycrawler_crawl_api.py` depends only on the Python standard library, which makes it suitable for direct use in local or automated environments.

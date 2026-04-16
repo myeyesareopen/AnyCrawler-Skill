@@ -12,6 +12,7 @@ from urllib import request as urllib_request
 
 
 DEFAULT_BASE_URL = "https://api.anycrawler.com"
+DEFAULT_SKILL_USER_AGENT = "Anycrawler Agent Skill v1.0"
 
 
 def _parse_optional_number(value: str | None) -> int | None:
@@ -72,7 +73,14 @@ def _write_json_file(path: str | Path, payload: Any) -> None:
 
 
 def _download_file(url: str, path: str | Path, timeout: float) -> None:
-    request = urllib_request.Request(url, headers={"Accept": "*/*"}, method="GET")
+    request = urllib_request.Request(
+        url,
+        headers={
+            "Accept": "*/*",
+            "User-Agent": DEFAULT_SKILL_USER_AGENT,
+        },
+        method="GET",
+    )
     try:
         with urllib_request.urlopen(request, timeout=timeout) as response:
             content = response.read()
@@ -100,6 +108,7 @@ def _perform_request(
             "Accept": "application/json",
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
+            "User-Agent": DEFAULT_SKILL_USER_AGENT,
         },
         method="POST",
     )
