@@ -216,7 +216,13 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--output",
-        help="Optional path to save the full JSON wrapper {data, meta}.",
+        help="Optional path to save the full JSON wrapper {data, meta}. Use --silent to suppress stdout JSON.",
+    )
+    parser.add_argument(
+        "-s",
+        "--silent",
+        action="store_true",
+        help="Do not print the JSON wrapper to stdout.",
     )
 
 
@@ -229,7 +235,12 @@ def _build_parser() -> argparse.ArgumentParser:
     page = subparsers.add_parser("page", help="Call POST /v1/crawl/page.")
     _add_common_arguments(page)
     page.add_argument("--url", required=True, help="Target URL.")
-    page.add_argument("--method", choices=("render", "fetch"), default="render")
+    page.add_argument(
+        "--method",
+        choices=("render", "fetch"),
+        default="fetch",
+        help="Crawl method. Default: fetch.",
+    )
     page.add_argument("--accept-cache", action="store_true", help="Set accept_cache=true.")
     page.add_argument("--include-metadata", action="store_true", help="Set include_metadata=true.")
     page.add_argument("--include-links", action="store_true", help="Set include_links=true.")
@@ -298,8 +309,9 @@ def main() -> int:
     if args.output:
         _write_json_file(args.output, wrapper)
 
-    json.dump(wrapper, sys.stdout, ensure_ascii=False, indent=2)
-    sys.stdout.write("\n")
+    if not args.silent:
+        json.dump(wrapper, sys.stdout, ensure_ascii=False, indent=2)
+        sys.stdout.write("\n")
 
     data = wrapper.get("data")
     ok = isinstance(data, dict) and data.get("ok") is False

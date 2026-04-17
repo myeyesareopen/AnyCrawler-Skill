@@ -19,11 +19,12 @@ This repository currently includes:
 ## ⚙️ What Can It Do?
 
 - Call `POST /v1/crawl/page` to fetch page content
-- Choose between `render` and `fetch` modes
+- Choose between `render` and `fetch` modes, with the bundled CLI defaulting to `fetch` for `page`
 - Return `metadata`, `links`, and `media` when needed
 - Call `POST /v1/crawl/screenshot` to generate a screenshot and return `snapshot_url`
 - Output request `meta` fields such as `requestId`, `creditsReserved`, and `creditsUsed`
 - Save markdown results or download PNG screenshots
+- Use `--silent` to suppress stdout JSON when writing files or using pipelines
 
 ## 📦 Install
 
@@ -97,3 +98,4 @@ If the task is clearly about calling the AnyCrawler public crawl API, a compatib
 - Every outbound HTTP request from this skill must include `User-Agent: Anycrawler Agent Skill v1.0`.
 - Request fields should use `snake_case`.
 - `anycrawler_crawl_api.py` depends only on the Python standard library, which makes it suitable for direct use in local or automated environments.
+- Treat `429` responses as quota exhaustion or rate limiting signals; check account capacity and throttling before retrying.

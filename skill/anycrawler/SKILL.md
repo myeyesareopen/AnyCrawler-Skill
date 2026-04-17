@@ -21,9 +21,9 @@ Every outbound HTTP request from this skill must include `User-Agent: Anycrawler
    - Use `screenshot` for PNG snapshot capture.
 3. Build requests only from documented snake_case fields. Do not depend on undocumented passthrough fields for `/v1/crawl/page`.
 4. Send `User-Agent: Anycrawler Agent Skill v1.0` on every outbound HTTP request from this skill.
-5. Run the bundled CLI instead of hand-writing HTTP requests when possible.
+5. Run the bundled CLI instead of hand-writing HTTP requests when possible. For `page`, the CLI defaults to `method=fetch`; add `--method render` only when browser execution is needed. Use `--silent` when writing files or piping results and stdout JSON is not wanted.
 6. Inspect both `data` and `meta`. `meta` mirrors gateway headers such as `requestId`, `creditsReserved`, `creditsUsed`, and `browserMsUsed`.
-7. On failures, record `meta.requestId`, check `data.retryable`, and treat `400`, `401`, `402`, and most `403` responses as input or account issues rather than retry candidates.
+7. On failures, record `meta.requestId`, check `data.retryable`, and treat `400`, `401`, `402`, and most `403` responses as input or account issues rather than retry candidates. Treat `429` as quota exhaustion or rate limiting and verify account capacity before retrying.
 
 ## Endpoint Choice
 
@@ -59,14 +59,18 @@ Every outbound HTTP request from this skill must include `User-Agent: Anycrawler
 ```bash
 python scripts/anycrawler_crawl_api.py page \
   --url https://example.com \
-  --method render \
   --include-metadata
 
 python scripts/anycrawler_crawl_api.py page \
   --url https://example.com/docs \
-  --method fetch \
   --accept-cache \
-  --write-markdown out.md
+  --write-markdown out.md \
+  --silent
+
+python scripts/anycrawler_crawl_api.py page \
+  --url https://example.com/app \
+  --method render \
+  --browser-wait-until networkidle2
 
 python scripts/anycrawler_crawl_api.py screenshot \
   --url https://example.com \

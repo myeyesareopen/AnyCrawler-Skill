@@ -15,6 +15,7 @@ Use only the documented fields below. Do not rely on `/v1/crawl/page` forwarding
   - `Authorization: Bearer <apiKey>`
   - `x-api-key: <apiKey>`
 - The bundled CLI defaults to `ANYCRAWLER_API_KEY` and optionally reads `ANYCRAWLER_BASE_URL`.
+- The bundled CLI defaults `page --method` to `fetch` and supports `--silent` to suppress stdout JSON when saving files or using pipelines.
 
 ## Endpoint Selection
 
@@ -37,7 +38,7 @@ Use only the documented fields below. Do not rely on `/v1/crawl/page` forwarding
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `url` | string | required | Target URL. |
-| `method` | `render` or `fetch` | `render` | `render` uses the browser path; `fetch` uses plain retrieval. |
+| `method` | `render` or `fetch` | `render` | `render` uses the browser path; `fetch` uses plain retrieval. The bundled CLI still defaults to `fetch` and sends it explicitly unless overridden. |
 | `accept_cache` | boolean | `false` | Allows cached responses when available. |
 | `include_metadata` | boolean | `false` | Exposes `results.metadata`. |
 | `include_links` | boolean | `false` | Exposes `results.links`. |
@@ -112,7 +113,7 @@ The bundled CLI returns these values under:
 | `402` | Not enough credits |
 | `403` | Account inactive or paid-only field used on an ineligible plan |
 | `409` | Reservation conflict |
-| `429` | Rate limit or browser concurrency limit |
+| `429` | Quota exhaustion, rate limiting, or browser concurrency limit |
 | `502` | Gateway could not connect to the worker |
 | `503` | Database or worker is not configured |
 | `504` | Worker timeout |
@@ -138,3 +139,4 @@ The bundled CLI returns these values under:
 - Preserve `requestId` on every failed crawl request.
 - Usually do not retry `400`, `401`, `402`, or most `403` responses without changing inputs, account state, or plan.
 - `409`, `429`, `502`, and `504` are the main candidates for backoff and retry.
+- For `429`, first confirm whether the failure is caused by insufficient available quota or a rate/concurrency limit. If it is a quota issue, restore capacity before retrying; if it is rate limiting, back off and retry later.
