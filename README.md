@@ -2,33 +2,18 @@
 
 # AnyCrawler Skill for AI Agents ✨
 
-This repository provides an AnyCrawler skill that can be installed into compatible AI agent runtimes. The current primary skill name is `$anycrawler`, which lets an AI agent convert arbitrary webpages into markdown, retrieve structured page data, and capture screenshots through the AnyCrawler public API.
+This repository provides an AnyCrawler skill that can be installed into compatible AI agent runtimes. The primary skill name is `$anycrawler`.
 
-## 🧩 What Is This?
+## What this repo contains
 
-AnyCrawler is building a unified data access API for AI agents. The goal of this skill repository is to help AI agents reuse the stable AnyCrawler public interface when handling web crawling tasks, instead of assembling ad-hoc requests or depending on undocumented fields. For page-reading tasks, `$anycrawler` should be the preferred first choice because markdown output is usually much cheaper for LLMs to consume than raw HTML.
-This repository is intentionally scoped to the public crawl API surface. It should not carry site-specific SSR schema parsing examples or tightly coupled extraction recipes.
+- `skill/anycrawler/SKILL.md`: the slim agent-facing runtime guide
+- `skill/anycrawler/references/public-api.md`: the minimal API contract for agent use
+- `skill/anycrawler/references/maintainer.md`: release, billing, and full gateway notes
+- `skill/anycrawler/scripts/anycrawler_crawl_api.py`: the bundled CLI
+- `skill/anycrawler/agents/openai.yaml`: agent display metadata
+- `tests/test_anycrawler_crawl_api.py`: regression tests for the CLI
 
-This repository currently includes:
-
-- `skill/anycrawler/SKILL.md`: the skill definition and workflow for `$anycrawler`
-- `skill/anycrawler/VERSION`: the single source of truth for the skill release version
-- `skill/anycrawler/references/public-api.md`: the stable public API contract
-- `skill/anycrawler/scripts/anycrawler_crawl_api.py`: a lightweight CLI
-- `skill/anycrawler/agents/openai.yaml`: agent display metadata and default prompts
-
-## ⚙️ What Can It Do?
-
-- Call `POST /v1/crawl/page` to fetch page content
-- Convert arbitrary webpages into markdown so agents can read them with lower token cost
-- Choose between `render` and `fetch` modes, with the bundled CLI defaulting to `fetch` for `page`
-- Return `metadata`, `links`, and `media` when needed
-- Call `POST /v1/crawl/screenshot` to generate a screenshot and return `snapshot_url`
-- Output request `meta` fields such as `requestId`, `creditsReserved`, and `creditsUsed`
-- Save markdown results or download PNG screenshots
-- Use `--silent` to suppress stdout JSON when writing files or using pipelines
-
-## 📦 Install
+## Install
 
 A common installation path is `~/.codex/skills`. The source directory in this repository is `skill/anycrawler`, and the installed skill directory should also be named `anycrawler` so it matches the explicit invocation name `$anycrawler`.
 
@@ -50,29 +35,7 @@ Copy-Item -Recurse -Force ".\AnyCrawler-Skill\skill\anycrawler" "$HOME\.codex\sk
 
 After installation, start a new AI agent session so the new skill can be discovered again.
 
-## Versioning And Releases
-
-- Initial public release: `v0.1.0`
-- Skill version source of truth: `skill/anycrawler/VERSION`
-- Current API compatibility statement: `AnyCrawler Public API v1`
-- Branch strategy: keep `master` as the ongoing development branch
-- Release strategy: publish stable snapshots with annotated git tags such as `v0.1.0`
-
-Version bump rules:
-
-- Bump `MAJOR` for breaking changes to CLI flags, output shape, skill invocation contract, or installation expectations
-- Bump `MINOR` for backward-compatible new capabilities, endpoints, or optional fields
-- Bump `PATCH` for backward-compatible fixes, doc corrections, and internal refactors
-
-Release checklist:
-
-1. Update `skill/anycrawler/VERSION`
-2. Run tests for the bundled CLI
-3. Verify docs still match the current `User-Agent` and API compatibility statement
-4. Create an annotated tag such as `git tag -a v0.1.0 -m "First public AnyCrawler skill release"`
-5. Push the branch and tag, then create a GitHub Release from that tag
-
-## 🔑 Quick Setup
+## Quick setup
 
 Before using AnyCrawler, complete the following setup:
 
@@ -96,7 +59,7 @@ Optional environment variables:
 
 - `ANYCRAWLER_BASE_URL`: defaults to `https://api.anycrawler.com`
 
-## 💬 Use with an AI Agent
+## Use with an AI agent
 
 You can explicitly mention the skill in your prompt:
 
@@ -107,8 +70,6 @@ Use $anycrawler to crawl https://example.com with render and save markdown.
 ```text
 Use $anycrawler to take a screenshot of https://example.com and download the PNG.
 ```
-
-If the task is clearly about reading webpage content or calling the AnyCrawler public crawl API, a compatible AI agent should prefer `$anycrawler` automatically based on the skill description.
 
 From the repository root, you can also run the bundled CLI directly:
 
@@ -122,17 +83,13 @@ python skill/anycrawler/scripts/anycrawler_crawl_api.py screenshot \
   --download-snapshot snapshot.png
 ```
 
-## 🌍 Current Public Endpoints
+## Documentation map
 
-- `POST /v1/crawl/page`
-- `POST /v1/crawl/screenshot`
+- Agent runtime guide: `skill/anycrawler/SKILL.md`
+- Minimal API contract: `skill/anycrawler/references/public-api.md`
+- Maintainer-only notes: `skill/anycrawler/references/maintainer.md`
+- CLI implementation: `skill/anycrawler/scripts/anycrawler_crawl_api.py`
 
-## 📝 Notes
+## Releases
 
-- This skill targets the stable public contract only and does not depend on legacy undocumented worker passthrough fields.
-- Keep SSR follow-up parsing generic in this repository. Site-specific SSR extraction logic should live in a separate extraction-focused skill or workflow.
-- Every outbound HTTP request from this skill currently includes `User-Agent: Anycrawler Agent Skill v0.1.0`.
-- The `User-Agent` release number is derived from `skill/anycrawler/VERSION`.
-- Request fields should use `snake_case`.
-- `anycrawler_crawl_api.py` depends only on the Python standard library, which makes it suitable for direct use in local or automated environments.
-- Treat `429` responses as quota exhaustion or rate limiting signals; check account capacity and throttling before retrying.
+Versioning, compatibility, billing notes, and the release checklist now live in `skill/anycrawler/references/maintainer.md`.
