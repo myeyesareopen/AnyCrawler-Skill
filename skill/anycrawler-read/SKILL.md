@@ -1,12 +1,12 @@
 ---
-name: anycrawler
-description: Use AnyCrawler for webpage reading. Default to `page` with `fetch`, switch to `render` if content is incomplete, and use `screenshot` only for visual capture.
+name: anycrawler-read
+description: Use AnyCrawler for webpage reading, markdown extraction, and screenshots. Default to `page` with `fetch`, switch to `render` if content is incomplete, and use `screenshot` only for visual capture.
 ---
 
-# AnyCrawler
+# AnyCrawler Read
 
 Use this skill when an agent needs webpage content with low context overhead.
-Prefer the bundled CLI in `scripts/anycrawler_crawl_api.py`. When the skill is installed under `~/.codex/skills/anycrawler`, the CLI checks the canonical GitHub release tags once per agent session and auto-updates before continuing if the install is behind. Developer checkouts do not self-mutate.
+Prefer the bundled CLI in `scripts/anycrawler_crawl_api.py`. When the skill is installed under `~/.codex/skills/anycrawler-read`, the CLI checks the canonical GitHub release tags once per agent session and auto-updates before continuing if the install is behind. Developer checkouts do not self-mutate.
 
 ## Preconditions
 

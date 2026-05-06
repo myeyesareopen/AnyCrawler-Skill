@@ -8,7 +8,7 @@ This reference keeps only the minimum contract an agent needs at runtime.
 - API key env var: `ANYCRAWLER_API_KEY`
 - Optional base URL env var: `ANYCRAWLER_BASE_URL`
 - Preferred client: `scripts/anycrawler_crawl_api.py`
-- The bundled CLI remains crawl-first. Search endpoints are documented here for stable integration reference.
+- Search workflows belong in the separate `anycrawler-search` skill.
 
 ## Endpoint selection
 
@@ -16,8 +16,6 @@ This reference keeps only the minimum contract an agent needs at runtime.
 | --- | --- | --- |
 | Read or extract webpage content | `POST /v1/crawl/page` | Default to `fetch` first and escalate to `render` when content is incomplete or clearly dynamic. |
 | Capture a screenshot | `POST /v1/crawl/screenshot` | Returns screenshot storage metadata only. |
-| Search the public web | `POST /v1/search/page` | Returns normalized search results such as `organic`. |
-| Search recent news | `POST /v1/search/news` | Returns normalized search results such as `news`. |
 
 ## Crawl request fields
 
@@ -44,27 +42,6 @@ This reference keeps only the minimum contract an agent needs at runtime.
 | `aspect_ratio` | Paid-plan-only override |
 | `user_agent` | Paid-plan-only field when explicitly set |
 
-## Search request fields
-
-### Shared stable fields for `/v1/search/page` and `/v1/search/news`
-
-| Field | Notes |
-| --- | --- |
-| `query` | Required search query |
-| `country` | Optional country code mapped to upstream `gl` |
-| `language` | Optional language code mapped to upstream `hl` |
-| `page` | Optional integer between `1` and `100` |
-| `results_per_page` | Optional integer between `1` and `100`; billed in blocks of 10 results |
-| `date_range` | Optional `past_hour`, `past_day`, `past_week`, `past_month`, or `past_year` |
-
-### Search response notes
-
-- Search responses use a normalized envelope with `ok`, `query`, `status_code`, `cache_timestamp`, `credits_used`, `title`, `final_url`, and `results`.
-- `results.search_parameters` mirrors the stable public request fields.
-- `results.organic` is the primary list for `/v1/search/page`.
-- `results.news` is the primary list for `/v1/search/news`.
-- Search cache hits do not change pricing.
-
 ## Response fields to care about
 
 ### Shared
@@ -85,12 +62,6 @@ This reference keeps only the minimum contract an agent needs at runtime.
 ### `screenshot`
 
 - `data.results.snapshot_url`
-
-### Search
-
-- `data.results.search_parameters`
-- `data.results.organic` for `/v1/search/page`
-- `data.results.news` for `/v1/search/news`
 
 ## Error handling
 

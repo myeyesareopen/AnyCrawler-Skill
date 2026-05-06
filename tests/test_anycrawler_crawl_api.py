@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest import mock
 
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "skill" / "anycrawler" / "scripts" / "anycrawler_crawl_api.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "skill" / "anycrawler-read" / "scripts" / "anycrawler_crawl_api.py"
 SPEC = importlib.util.spec_from_file_location("anycrawler_crawl_api", MODULE_PATH)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
@@ -21,7 +21,7 @@ SPEC.loader.exec_module(MODULE)
 class AnyCrawlerCrawlApiTests(unittest.TestCase):
     def _write_skill_tree(self, root: Path, version: str, *, extra_files: dict[str, str] | None = None) -> None:
         files = {
-            "SKILL.md": "---\nname: anycrawler\n---\n",
+            "SKILL.md": "---\nname: anycrawler-read\n---\n",
             "VERSION": version + "\n",
             "agents/openai.yaml": "interface: {}\n",
             "references/public-api.md": "# Public API\n",
@@ -129,9 +129,9 @@ class AnyCrawlerCrawlApiTests(unittest.TestCase):
     def test_replace_managed_skill_root_swaps_in_staged_tree_and_keeps_backup(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
-            skill_root = temp_path / ".codex" / "skills" / "anycrawler"
-            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-state"
-            staged_skill_root = temp_path / "staged-anycrawler"
+            skill_root = temp_path / ".codex" / "skills" / "anycrawler-read"
+            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-read-state"
+            staged_skill_root = temp_path / "staged-anycrawler-read"
 
             self._write_skill_tree(skill_root, "0.1.0", extra_files={"obsolete.txt": "old\n"})
             self._write_skill_tree(staged_skill_root, "0.1.1", extra_files={"fresh.txt": "new\n"})
@@ -151,8 +151,8 @@ class AnyCrawlerCrawlApiTests(unittest.TestCase):
     def test_auto_update_preflight_runs_once_per_session_when_current(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
-            skill_root = temp_path / ".codex" / "skills" / "anycrawler"
-            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-state"
+            skill_root = temp_path / ".codex" / "skills" / "anycrawler-read"
+            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-read-state"
             self._write_skill_tree(skill_root, "0.1.1")
 
             with mock.patch.dict(
@@ -179,7 +179,7 @@ class AnyCrawlerCrawlApiTests(unittest.TestCase):
 
     def test_auto_update_preflight_skips_non_managed_install(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            skill_root = Path(temp_dir) / "repo-copy" / "skill" / "anycrawler"
+            skill_root = Path(temp_dir) / "repo-copy" / "skill" / "anycrawler-read"
             self._write_skill_tree(skill_root, "0.1.0")
 
             with mock.patch.object(MODULE, "_fetch_latest_release_tag") as fetch_latest:
@@ -191,8 +191,8 @@ class AnyCrawlerCrawlApiTests(unittest.TestCase):
     def test_auto_update_preflight_updates_outdated_managed_install(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
-            skill_root = temp_path / ".codex" / "skills" / "anycrawler"
-            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-state"
+            skill_root = temp_path / ".codex" / "skills" / "anycrawler-read"
+            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-read-state"
             self._write_skill_tree(skill_root, "0.1.0")
 
             with mock.patch.dict(
@@ -223,8 +223,8 @@ class AnyCrawlerCrawlApiTests(unittest.TestCase):
     def test_auto_update_preflight_degrades_on_remote_check_failure(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
-            skill_root = temp_path / ".codex" / "skills" / "anycrawler"
-            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-state"
+            skill_root = temp_path / ".codex" / "skills" / "anycrawler-read"
+            state_dir = temp_path / ".codex" / "skills" / ".anycrawler-read-state"
             self._write_skill_tree(skill_root, "0.1.0")
 
             with mock.patch.dict(

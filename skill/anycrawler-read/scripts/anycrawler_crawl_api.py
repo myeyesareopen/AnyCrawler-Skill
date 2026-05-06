@@ -230,9 +230,9 @@ def _expected_managed_skill_root() -> Path:
 
     codex_home = os.getenv("CODEX_HOME")
     if codex_home:
-        return (Path(codex_home).expanduser() / "skills" / "anycrawler").resolve()
+        return (Path(codex_home).expanduser() / "skills" / "anycrawler-read").resolve()
 
-    return (Path.home() / ".codex" / "skills" / "anycrawler").resolve()
+    return (Path.home() / ".codex" / "skills" / "anycrawler-read").resolve()
 
 
 def _is_managed_skill_install(skill_root: Path = SKILL_ROOT) -> bool:
@@ -249,9 +249,9 @@ def _resolve_state_dir() -> Path:
 
     codex_home = os.getenv("CODEX_HOME")
     if codex_home:
-        return Path(codex_home).expanduser() / "skills" / ".anycrawler-state"
+        return Path(codex_home).expanduser() / "skills" / ".anycrawler-read-state"
 
-    return Path.home() / ".codex" / "skills" / ".anycrawler-state"
+    return Path.home() / ".codex" / "skills" / ".anycrawler-read-state"
 
 
 def _session_state_path(state_dir: Path | None = None) -> Path:
@@ -373,9 +373,9 @@ def _fetch_latest_release_tag(*, timeout: float, repository: str | None = None) 
 
 
 def _find_extracted_skill_root(extract_dir: Path) -> Path:
-    matches = list(extract_dir.glob("*/skill/anycrawler"))
+    matches = list(extract_dir.glob("*/skill/anycrawler-read"))
     if len(matches) != 1:
-        raise RuntimeError("Failed to locate skill/anycrawler in the downloaded release archive.")
+        raise RuntimeError("Failed to locate skill/anycrawler-read in the downloaded release archive.")
     return matches[0]
 
 
@@ -418,7 +418,7 @@ def _stage_latest_skill_release(
     extracted_skill_root = _find_extracted_skill_root(extract_dir)
     _validate_skill_tree(extracted_skill_root, expected_version=version)
 
-    staged_skill_root = temp_dir / "staged-anycrawler"
+    staged_skill_root = temp_dir / "staged-anycrawler-read"
     shutil.copytree(extracted_skill_root, staged_skill_root)
     return staged_skill_root
 
@@ -430,8 +430,8 @@ def _replace_managed_skill_root(*, skill_root: Path, staged_skill_root: Path, st
 
     current_version = _load_skill_version_from(skill_root / "VERSION")
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    backup_root = backups_dir / f"anycrawler-{current_version}-{timestamp}"
-    replacement_root = skill_root.parent / f".anycrawler-replacement-{timestamp}"
+    backup_root = backups_dir / f"anycrawler-read-{current_version}-{timestamp}"
+    replacement_root = skill_root.parent / f".anycrawler-read-replacement-{timestamp}"
 
     if replacement_root.exists():
         shutil.rmtree(replacement_root)
