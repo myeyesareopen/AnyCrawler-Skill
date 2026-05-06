@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest import mock
 
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "skill" / "anycrawler-read" / "scripts" / "anycrawler_crawl_api.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "skills" / "anycrawler-read" / "scripts" / "anycrawler_crawl_api.py"
 SPEC = importlib.util.spec_from_file_location("anycrawler_crawl_api", MODULE_PATH)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
@@ -179,7 +179,7 @@ class AnyCrawlerCrawlApiTests(unittest.TestCase):
 
     def test_auto_update_preflight_skips_non_managed_install(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            skill_root = Path(temp_dir) / "repo-copy" / "skill" / "anycrawler-read"
+            skill_root = Path(temp_dir) / "repo-copy" / "skills" / "anycrawler-read"
             self._write_skill_tree(skill_root, "0.1.0")
 
             with mock.patch.object(MODULE, "_fetch_latest_release_tag") as fetch_latest:

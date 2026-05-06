@@ -1,0 +1,132 @@
+from __future__ import annotations
+
+import argparse
+import importlib.util
+import json
+import tempfile
+import unittest
+import sys
+from pathlib import Path
+from unittest import mock
+
+
+MODULE_PATH = Path(__file__).resolve().parents[1] / "skills" / "anycrawler-search" / "scripts" / "anycrawler_search_api.py"
+SPEC = importlib.util.spec_from_file_location("anycrawler_search_api", MODULE_PATH)
+MODULE = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader is not None
+SPEC.loader.exec_module(MODULE)
+
+
+class AnyCrawlerSearchApiTests(unittest.TestCase):
+    def test_user_agent_uses_version_file(self) -> None:
+        version = (MODULE.SKILL_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+
+        self.assertEqual(MODULE.SKILL_VERSION, version)
+        self.assertEqual(MODULE.DEFAULT_SKILL_USER_AGENT, f"Anycrawler Search Agent Skill v{version}")
+
+    def test_search_payload_omits_empty_optional_locale_fields(self) -> None:
+        args = argparse.Namespace(
+            query="site reliability engineering",
+            country=None,
+            language=None,
+            location=None,
+            page=1,
+            results_per_page=10,
+        )
+
+        payload = MODULE._search_payload(args)
+
+        self.assertEqual(
+            payload,
+            {
+                "query": "site reliability engineering",
+                "page": 1,
+                "results_per_page": 10,
+            },
+        )
+
+    def test_search_payload_includes_locale_fields_when_set(self) -> None:
+        args = argparse.Namespace(
+            query="AnyCrawler",
+            country="us",
+            language="en",
+            location="San Francisco, California, United States",
+            page=2,
+            results_per_page=20,
+        )
+
+        payload = MODULE._search_payload(args)
+
+        self.assertEqual(payload["country"], "us")
+        self.assertEqual(payload["language"], "en")
+        self.assertEqual(payload["location"], "San Francisco, California, United States")
+        self.assertEqual(payload["page"], 2)
+        self.assertEqual(payload["results_per_page"], 20)
+
+    def test_parser_supports_all_search_channels(self) -> None:
+        parser = MODULE._build_parser()
+
+        for channel in MODULE.SEARCH_CHANNELS:
+            args = parser.parse_args([channel, "--query", "example"])
+            self.assertEqual(args.channel, channel)
+            self.assertEqual(args.query, "example")
+
+    def test_parser_supports_version_flag(self) -> None:
+        parser = MODULE._build_parser()
+
+        with self.assertRaises(SystemExit) as exc:
+            parser.parse_args(["--version"])
+
+        self.assertEqual(exc.exception.code, 0)
+
+    def test_main_writes_output_and_returns_nonzero_on_failed_request(self) -> None:
+        wrapper = {
+            "data": {
+                "ok": False,
+                "error_code": "INVALID_REQUEST",
+                "error_message": "Invalid request",
+                "retryable": False,
+            },
+            "meta": {
+                "status": 400,
+                "requestId": "req_test",
+                "creditsReserved": 0,
+                "creditsUsed": 0,
+                "browserMsUsed": 0,
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "wrapper.json"
+            argv = [
+                "page",
+                "--query",
+                "example",
+                "--api-key",
+                "test-key",
+                "--output",
+                str(output_path),
+                "--silent",
+            ]
+
+            with mock.patch.object(MODULE, "_perform_request", return_value=(wrapper, 400)) as perform_request:
+                exit_code = MODULE.main(argv)
+
+            self.assertEqual(exit_code, 1)
+            self.assertTrue(output_path.exists())
+            self.assertEqual(json.loads(output_path.read_text(encoding="utf-8")), wrapper)
+            perform_request.assert_called_once()
+            call_kwargs = perform_request.call_args.kwargs
+            self.assertEqual(call_kwargs["channel"], "page")
+            self.assertEqual(call_kwargs["payload"]["query"], "example")
+
+    def test_main_rejects_missing_api_key(self) -> None:
+        with mock.patch.dict(MODULE.os.environ, {}, clear=True):
+            with self.assertRaises(SystemExit) as exc:
+                MODULE.main(["page", "--query", "example", "--silent"])
+
+        self.assertIn("Missing API key", str(exc.exception))
+
+
+if __name__ == "__main__":
+    unittest.main()

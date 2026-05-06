@@ -6,7 +6,7 @@ This file keeps details that are useful for maintainers but unnecessary for most
 
 - Skill release: `0.2.0`
 - API compatibility: `AnyCrawler Public API v1`
-- Version source of truth: `skill/anycrawler-read/VERSION`
+- Version source of truth: `skills/anycrawler-read/VERSION`
 - Required outbound header for this release: `User-Agent: Anycrawler Agent Skill v0.2.0`
 - Auto-update authority: latest semver tag from `AnyCrawler-com/AnyCrawler-Skill`
 - Auto-update scope: managed installs under `~/.codex/skills/anycrawler-read` only; developer checkouts must not self-mutate
@@ -67,7 +67,7 @@ CLI wrapper shape:
 
 ## Release checklist
 
-1. Update `skill/anycrawler-read/VERSION`
+1. Update `skills/anycrawler-read/VERSION`
 2. Run `python3 -m unittest tests/test_anycrawler_crawl_api.py`
 3. Verify docs still match the current `User-Agent` and API compatibility statement
 4. Create an annotated tag such as `git tag -a v0.2.0 -m "AnyCrawler skill release"`
@@ -76,5 +76,5 @@ CLI wrapper shape:
 ## Repository pointers
 
 - Source repository: `https://github.com/AnyCrawler-com/AnyCrawler-Skill`
-- Bundled CLI: `skill/anycrawler-read/scripts/anycrawler_crawl_api.py`
-- Agent metadata: `skill/anycrawler-read/agents/openai.yaml`
+- Bundled CLI: `skills/anycrawler-read/scripts/anycrawler_crawl_api.py`
+- Agent metadata: `skills/anycrawler-read/agents/openai.yaml`

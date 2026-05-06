@@ -373,9 +373,9 @@ def _fetch_latest_release_tag(*, timeout: float, repository: str | None = None) 
 
 
 def _find_extracted_skill_root(extract_dir: Path) -> Path:
-    matches = list(extract_dir.glob("*/skill/anycrawler-read"))
+    matches = list(extract_dir.glob("*/skills/anycrawler-read"))
     if len(matches) != 1:
-        raise RuntimeError("Failed to locate skill/anycrawler-read in the downloaded release archive.")
+        raise RuntimeError("Failed to locate skills/anycrawler-read in the downloaded release archive.")
     return matches[0]
 
 

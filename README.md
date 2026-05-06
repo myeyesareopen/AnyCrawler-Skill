@@ -1,28 +1,35 @@
 ﻿[🔌 Register / Sign In](https://app.anycrawler.com/login) | [🛋 Dashboard](https://app.anycrawler.com/overview) | [🌓 Get API Keys](https://app.anycrawler.com/api-keys) | [🕪 Public API](https://api.anycrawler.com)
 
-# AnyCrawler Read Skill for AI Agents ✅
+# AnyCrawler Skills for AI Agents ✅
 
-This repository provides an AnyCrawler read skill that can be installed into compatible AI agent runtimes. The primary skill name is `$anycrawler-read`. The bundled runtime remains crawl-first, leaving search workflows to the separate `$anycrawler-search` skill.
+This repository provides AnyCrawler skills that can be installed into compatible AI agent runtimes. Use `$anycrawler-read` for webpage reading and screenshots, and `$anycrawler-search` for public search across web pages, images, news, videos, and scholar results.
 
 ## What this repo contains
 
-- `skill/anycrawler-read/SKILL.md`: the slim agent-facing runtime guide
-- `skill/anycrawler-read/references/public-api.md`: the minimal API contract for agent use
-- `skill/anycrawler-read/references/maintainer.md`: release, billing, and full gateway notes
-- `skill/anycrawler-read/scripts/anycrawler_crawl_api.py`: the bundled CLI
-- `skill/anycrawler-read/agents/openai.yaml`: agent display metadata
+- `skills/anycrawler-read/SKILL.md`: the slim agent-facing runtime guide for crawling, reading, and screenshots
+- `skills/anycrawler-read/references/public-api.md`: the minimal crawl API contract for agent use
+- `skills/anycrawler-read/references/maintainer.md`: read-skill release, billing, and gateway notes
+- `skills/anycrawler-read/scripts/anycrawler_crawl_api.py`: the bundled read CLI
+- `skills/anycrawler-read/agents/openai.yaml`: read-skill agent display metadata
+- `skills/anycrawler-search/SKILL.md`: the slim agent-facing runtime guide for public search
+- `skills/anycrawler-search/references/public-api.md`: the minimal search API contract for agent use
+- `skills/anycrawler-search/references/maintainer.md`: search-skill release, billing, and gateway notes
+- `skills/anycrawler-search/scripts/anycrawler_search_api.py`: the bundled search CLI
+- `skills/anycrawler-search/agents/openai.yaml`: search-skill agent display metadata
 - `tests/test_anycrawler_crawl_api.py`: regression tests for the CLI
+- `tests/test_anycrawler_search_api.py`: regression tests for the search CLI
 
 ## Install
 
-A common installation path is `~/.codex/skills`. The source directory in this repository is `skill/anycrawler-read`, and the installed skill directory should also be named `anycrawler-read` so it matches the explicit invocation name `$anycrawler-read`.
+A common installation path is `~/.codex/skills`. The source directories in this repository are under `skills/`, and each installed skill directory should keep the same name so it matches its explicit invocation name.
 
 ### macOS / Linux
 
 ```bash
 git clone https://github.com/AnyCrawler-com/AnyCrawler-Skill.git
 mkdir -p ~/.codex/skills
-cp -R AnyCrawler-Skill/skill/anycrawler-read ~/.codex/skills/anycrawler-read
+cp -R AnyCrawler-Skill/skills/anycrawler-read ~/.codex/skills/anycrawler-read
+cp -R AnyCrawler-Skill/skills/anycrawler-search ~/.codex/skills/anycrawler-search
 ```
 
 ### Windows PowerShell
@@ -30,7 +37,8 @@ cp -R AnyCrawler-Skill/skill/anycrawler-read ~/.codex/skills/anycrawler-read
 ```powershell
 git clone https://github.com/AnyCrawler-com/AnyCrawler-Skill.git
 New-Item -ItemType Directory -Force "$HOME\.codex\skills" | Out-Null
-Copy-Item -Recurse -Force ".\AnyCrawler-Skill\skill\anycrawler-read" "$HOME\.codex\skills\anycrawler-read"
+Copy-Item -Recurse -Force ".\AnyCrawler-Skill\skills\anycrawler-read" "$HOME\.codex\skills\anycrawler-read"
+Copy-Item -Recurse -Force ".\AnyCrawler-Skill\skills\anycrawler-search" "$HOME\.codex\skills\anycrawler-search"
 ```
 
 After installation, start a new AI agent session so the new skill can be discovered again.
@@ -73,37 +81,60 @@ Use $anycrawler-read to crawl https://example.com with render and save markdown.
 Use $anycrawler-read to take a screenshot of https://example.com and download the PNG.
 ```
 
+```text
+Use $anycrawler-search to search recent news about AnyCrawler.
+```
+
 From the repository root, you can also run the bundled CLI directly:
 
 ```bash
-python skill/anycrawler-read/scripts/anycrawler_crawl_api.py page \
+python skills/anycrawler-read/scripts/anycrawler_crawl_api.py page \
   --url https://example.com \
   --include-metadata
 
-python skill/anycrawler-read/scripts/anycrawler_crawl_api.py screenshot \
+python skills/anycrawler-read/scripts/anycrawler_crawl_api.py screenshot \
   --url https://example.com \
   --download-snapshot snapshot.png
+
+python skills/anycrawler-search/scripts/anycrawler_search_api.py page \
+  --query "site reliability engineering"
+
+python skills/anycrawler-search/scripts/anycrawler_search_api.py news \
+  --query "AnyCrawler launch" \
+  --country us \
+  --language en
 ```
 
-For the stable public crawl API contract, read `skill/anycrawler-read/references/public-api.md`.
+For the stable public crawl API contract, read `skills/anycrawler-read/references/public-api.md`.
+For the stable public search API contract, read `skills/anycrawler-search/references/public-api.md`.
 
 ## Documentation map
 
-- Agent runtime guide: `skill/anycrawler-read/SKILL.md`
-- Minimal API contract: `skill/anycrawler-read/references/public-api.md`
-- Maintainer-only notes: `skill/anycrawler-read/references/maintainer.md`
-- CLI implementation: `skill/anycrawler-read/scripts/anycrawler_crawl_api.py`
+- Read runtime guide: `skills/anycrawler-read/SKILL.md`
+- Read API contract: `skills/anycrawler-read/references/public-api.md`
+- Read maintainer notes: `skills/anycrawler-read/references/maintainer.md`
+- Read CLI implementation: `skills/anycrawler-read/scripts/anycrawler_crawl_api.py`
+- Search runtime guide: `skills/anycrawler-search/SKILL.md`
+- Search API contract: `skills/anycrawler-search/references/public-api.md`
+- Search maintainer notes: `skills/anycrawler-search/references/maintainer.md`
+- Search CLI implementation: `skills/anycrawler-search/scripts/anycrawler_search_api.py`
 
 ## Stable public endpoints
 
 - `POST /v1/crawl/page`
 - `POST /v1/crawl/screenshot`
+- `POST /v1/search/page`
+- `POST /v1/search/images`
+- `POST /v1/search/news`
+- `POST /v1/search/videos`
+- `POST /v1/search/scholar`
+
 ## Notes
 
 - This repository targets the stable public contract only and does not depend on undocumented worker passthrough fields.
-- The bundled CLI remains crawl-first. Search workflows should live in the separate `$anycrawler-search` skill.
+- Read and search workflows are split into separate skills so invocation stays precise.
 - Keep SSR follow-up parsing generic here. Site-specific extraction logic should live in a separate extraction-focused skill or workflow.
 
 ## Releases
 
-Versioning, compatibility, billing notes, and the release checklist live in `skill/anycrawler-read/references/maintainer.md`.
+Versioning, compatibility, billing notes, and release checklists live in each skill's `references/maintainer.md`.
